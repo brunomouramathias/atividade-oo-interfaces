@@ -25,23 +25,23 @@ O mapa mental completo está disponível em: `src/fase-01-heuristica/MAPA-MENTAL
 
 ### Decisões de Design
 
-- **Problema escolhido:** Calcular preço com desconto em compras
-- **Contratos:** Interface `ICalculadoraDesconto` com método `Calcular(preco)`
-- **Aplicação do ISP:** Interface pequena e coesa com apenas um método
-- **Ponto de composição:** Cliente (Carrinho) recebe a calculadora no construtor
-- **Alternância:** Possível trocar tipo de desconto sem modificar o cliente
+- **Problema escolhido:** Codificação de mensagem para proteção de conteúdo
+- **Contratos:** Interface `ICodificador` com métodos `Codificar(texto)` e `Decodificar(texto)`
+- **Aplicação do ISP:** Interface pequena e coesa com dois métodos relacionados
+- **Ponto de composição:** Cliente (GerenciadorMensagens) recebe o codificador no construtor
+- **Alternância:** Possível trocar método de codificação (Base64, Cifra César) sem modificar o cliente
 
 ### Checklist de Qualidade
 
-- [x] Contrato coeso (único método bem definido)
+- [x] Contrato coeso (dois métodos bem definidos e relacionados)
 - [x] Cliente não conhece implementações concretas
-- [x] Novos descontos podem ser adicionados sem modificar código existente
+- [x] Novos métodos de codificação podem ser adicionados sem modificar código existente
 - [x] Ausência de switch/if espalhados após uso de interfaces
 - [x] Cada classe tem uma única responsabilidade
 
 ### Sinais de Alerta Identificados
 
-1. Switch/if por tipo espalhado no código
-2. Classe com muitas responsabilidades
+1. Switch/if por tipo de codificação espalhado no código
+2. Classe com muitas responsabilidades (codificar + validar + salvar + enviar)
 3. Implementações que não usam todos os métodos da interface
 

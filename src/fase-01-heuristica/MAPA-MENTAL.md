@@ -1,69 +1,89 @@
 # Fase 1 - Heurística antes do código (Mapa Mental)
 
-## Problema Escolhido: Calcular Preço com Desconto
+## Problema Escolhido: Codificação de Mensagem
 
-**Objetivo:** Calcular o preço final de um produto aplicando diferentes tipos de desconto.
+**Objetivo:** Proteger o conteúdo de uma mensagem antes de transmiti-la ou armazená-la.
 
 ---
 
 ## 1. Versão Procedural (com if/switch)
 
-Na abordagem procedural, usamos condicionais para decidir qual tipo de desconto aplicar:
+Na abordagem procedural, usamos condicionais para decidir qual tipo de codificação aplicar:
 
 ```
-função CalcularPrecoFinal(preco, tipoDesconto):
-    se tipoDesconto == "CLIENTE_VIP":
-        retornar preco * 0.80  // 20% de desconto
-    senão se tipoDesconto == "CUPOM10":
-        retornar preco * 0.90  // 10% de desconto
-    senão se tipoDesconto == "BLACK_FRIDAY":
-        retornar preco * 0.50  // 50% de desconto
+função CodificarMensagem(texto, tipoCodificacao):
+    se tipoCodificacao == "BASE64":
+        retornar ConverterParaBase64(texto)
+    senão se tipoCodificacao == "CESAR":
+        retornar AplicarCifraDeCesar(texto, 3)
+    senão se tipoCodificacao == "NENHUM":
+        retornar texto
     senão:
-        retornar preco  // sem desconto
+        retornar texto
+
+função ConverterParaBase64(texto):
+    // lógica de conversão para Base64
+    
+função AplicarCifraDeCesar(texto, deslocamento):
+    // desloca cada caractere em 3 posições
 ```
 
 **Problemas identificados:**
-- A cada novo tipo de desconto, precisamos modificar a função
-- Lógica de decisão misturada com cálculos
-- Difícil de testar cada tipo de desconto isoladamente
-- Se tivermos muitos tipos de desconto, a função fica muito grande
+- A cada novo método de codificação, precisamos modificar a função
+- Lógica de decisão misturada com algoritmos de codificação
+- Difícil de testar cada tipo de codificação isoladamente
+- Se tivermos muitos métodos, a função fica muito grande e confusa
 
 ---
 
 ## 2. OO sem Interface (quem muda o quê)
 
-Na abordagem orientada a objetos, criamos classes para cada tipo de desconto:
+Na abordagem orientada a objetos, criamos classes para cada tipo de codificação:
 
 ```
-classe abstrata CalculadoraDesconto:
-    método abstrato Calcular(preco)
+classe abstrata Codificador:
+    método abstrato Codificar(texto)
+    método abstrato Decodificar(texto)
 
-classe DescontoVip herda CalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco * 0.80
+classe CodificadorBase64 herda Codificador:
+    método Codificar(texto):
+        retornar ConverterParaBase64(texto)
+    
+    método Decodificar(texto):
+        retornar ConverterDeBase64(texto)
 
-classe DescontoCupom herda CalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco * 0.90
+classe CodificadorCesar herda Codificador:
+    deslocamento = 3
+    
+    método Codificar(texto):
+        resultado = ""
+        para cada caractere em texto:
+            resultado += (caractere + deslocamento)
+        retornar resultado
+    
+    método Decodificar(texto):
+        resultado = ""
+        para cada caractere em texto:
+            resultado += (caractere - deslocamento)
+        retornar resultado
 
-classe DescontoBlackFriday herda CalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco * 0.50
-
-classe SemDesconto herda CalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco
+classe SemCodificacao herda Codificador:
+    método Codificar(texto):
+        retornar texto
+    
+    método Decodificar(texto):
+        retornar texto
 ```
 
 **O que muda:**
-- Cada tipo de desconto vira uma classe própria
+- Cada método de codificação vira uma classe própria
 - Não precisa mais de if/switch
-- Para adicionar novo desconto, crio uma nova classe
+- Para adicionar nova codificação, crio uma nova classe
 - Mas ainda existe acoplamento à hierarquia de classes
 
 **Quem muda o quê:**
-- Para adicionar desconto: criar nova classe que herda de CalculadoraDesconto
-- Cliente escolhe qual calculadora usar na criação do objeto
+- Para adicionar codificação: criar nova classe que herda de Codificador
+- Cliente escolhe qual codificador usar na criação do objeto
 
 ---
 
@@ -72,42 +92,61 @@ classe SemDesconto herda CalculadoraDesconto:
 Agora usamos interface para definir o contrato:
 
 ```
-interface ICalculadoraDesconto:
-    método Calcular(preco)
+interface ICodificador:
+    método Codificar(texto)
+    método Decodificar(texto)
 
-classe DescontoVip implementa ICalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco * 0.80
+classe CodificadorBase64 implementa ICodificador:
+    método Codificar(texto):
+        retornar ConverterParaBase64(texto)
+    
+    método Decodificar(texto):
+        retornar ConverterDeBase64(texto)
 
-classe DescontoCupom implementa ICalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco * 0.90
+classe CodificadorCesar implementa ICodificador:
+    deslocamento = 3
+    
+    método Codificar(texto):
+        resultado = ""
+        para cada caractere em texto:
+            resultado += (caractere + deslocamento)
+        retornar resultado
+    
+    método Decodificar(texto):
+        resultado = ""
+        para cada caractere em texto:
+            resultado += (caractere - deslocamento)
+        retornar resultado
 
-classe DescontoBlackFriday implementa ICalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco * 0.50
-
-classe SemDesconto implementa ICalculadoraDesconto:
-    método Calcular(preco):
-        retornar preco
+classe SemCodificacao implementa ICodificador:
+    método Codificar(texto):
+        retornar texto
+    
+    método Decodificar(texto):
+        retornar texto
 ```
 
 **Cliente usando o contrato:**
 ```
-classe Carrinho:
-    calculadora: ICalculadoraDesconto
+classe GerenciadorMensagens:
+    codificador: ICodificador
     
-    construtor(calculadora):
-        this.calculadora = calculadora
+    construtor(codificador):
+        this.codificador = codificador
     
-    método ObterTotal(preco):
-        retornar calculadora.Calcular(preco)
+    método EnviarMensagem(textoOriginal):
+        textoProtegido = codificador.Codificar(textoOriginal)
+        // envia a mensagem protegida
+        
+    método ReceberMensagem(textoProtegido):
+        textoOriginal = codificador.Decodificar(textoProtegido)
+        retornar textoOriginal
 ```
 
-**Contrato ICalculadoraDesconto permite:**
-- Trocar tipo de desconto sem modificar o Carrinho
-- Testar Carrinho com desconto falso (stub)
-- Adicionar novos descontos sem alterar código existente
+**Contrato ICodificador permite:**
+- Trocar método de codificação sem modificar o GerenciadorMensagens
+- Testar GerenciadorMensagens com codificador falso (stub)
+- Adicionar novos métodos de codificação sem alterar código existente
 - Cliente depende só do contrato, não da implementação
 
 ---
@@ -115,14 +154,14 @@ classe Carrinho:
 ## 3 Sinais de Alerta Previstos
 
 1. **Switch/if por tipo espalhado no código**
-   - Se aparecer vários if/switch verificando tipo de desconto em lugares diferentes
-   - Sinal: código repetido e difícil de manter
+   - Se aparecer vários if/switch verificando tipo de codificação em lugares diferentes
+   - Sinal: código repetido e difícil de manter, cada nova codificação exige mudança em vários pontos
 
 2. **Classe com muitas responsabilidades**
-   - Se uma classe calcular desconto E validar cupom E consultar banco de dados
-   - Sinal: violação do princípio da responsabilidade única
+   - Se uma classe codificar mensagem E validar formato E salvar em arquivo E enviar por rede
+   - Sinal: violação do princípio da responsabilidade única (SRP)
 
 3. **Implementações que não usam todos os métodos da interface**
-   - Se alguma classe implementar a interface mas não usar algum método
-   - Sinal: interface muito gorda, precisa segregar em contratos menores
+   - Se alguma classe implementar ICodificador mas lançar exceção em Decodificar
+   - Sinal: interface muito gorda, talvez precise segregar em IEncoder e IDecoder separados
 
