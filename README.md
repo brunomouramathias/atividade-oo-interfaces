@@ -50,37 +50,38 @@ Esta fase é apenas conceitual, sem código. O documento completo está em: `src
 ### Objetivo
 Desenhar um mapa de evolução para um problema trivial, mostrando a transição de código procedural para orientado a objetos e finalmente usando interfaces.
 
-### Problema Escolhido
-Ordenação de listas de números, alternando automaticamente entre Bubble Sort (listas pequenas) e Quick Sort (listas maiores).
+### Problemas Escolhidos
+1. **Codificação de Mensagem** - Alternar entre Base64 e Cifra de César conforme contexto
+2. **Ordenação de listas** - Alternar entre Bubble Sort e Quick Sort conforme tamanho
 
 ### Como executar
 Esta fase é conceitual (sem código executável). O mapa mental completo está em: `src/fase-01-heuristica/MAPA-MENTAL.md`
 
-### Estrutura do Mapa
+### Estrutura do Mapa (2 exemplos completos)
 
-**Quadro 1 - Procedural:**
-- Função com `if/switch` para escolher algoritmo por tamanho
-- Decisões embutidas no fluxo principal
-- Sinais de dor: novos algoritmos exigem mais `if`
+**Exemplo 1: Codificação de Mensagem**
+- Quadro 1: Função com `if` por contexto (log_interno vs dados_sensiveis)
+- Quadro 2: Classes `CodificadorBase64` e `CodificadorCesar` 
+- Quadro 3: Interface `ICodificador` com catálogo + GerenciadorMensagens
 
-**Quadro 2 - OO sem interface:**
-- Classes `BubbleSortAlgorithm` e `QuickSortAlgorithm`
-- Orquestrador ainda conhece classes concretas
-- Melhora: coesão; Rigidez: `if` ainda existe no orquestrador
-
-**Quadro 3 - Com interface:**
-- Interface `IAlgoritmoOrdenacao`
-- Ponto de composição: catálogo por chave + política externa
-- Cliente não muda ao trocar algoritmos
+**Exemplo 2: Ordenação de Coleções**
+- Quadro 1: Função com `if` por tamanho de lista
+- Quadro 2: Classes `BubbleSortAlgorithm` e `QuickSortAlgorithm`
+- Quadro 3: Interface `IAlgoritmoOrdenacao` com catálogo + ServicoOrdenacao
 
 ### Decisões de Design
 
-- **Contrato:** Interface `IAlgoritmoOrdenacao` com método `Ordenar(lista)`
-- **Aplicação do ISP:** Interface coesa com um único método bem definido
-- **Ponto de composição:** Política de seleção fora do cliente (catálogo + função de seleção)
-- **Alternância:** Trocar algoritmo ou política sem modificar o ServicoOrdenacao
+**Contratos definidos:**
+- `ICodificador` - Codificar(texto) e Decodificar(texto)
+- `IAlgoritmoOrdenacao` - Ordenar(lista)
 
-### 3 Sinais de Alerta Identificados
+**Aplicação do ISP:** Interfaces coesas com métodos bem definidos e relacionados
+
+**Ponto de composição:** Catálogo por chave + política de seleção externa ao cliente
+
+**Alternância:** Trocar implementações ou políticas sem modificar clientes (GerenciadorMensagens, ServicoOrdenacao)
+
+### 3 Sinais de Alerta Identificados (em cada exemplo)
 
 1. **Cliente muda ao trocar implementação** - acoplamento ao "como"
 2. **Ramificações espalhadas** - `if/switch` por tipo em vários pontos
