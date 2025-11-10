@@ -16,17 +16,16 @@
 
 ---
 
-## Caso 2 - Compressão de Arquivos
+## Caso 2 - Ordenação de Coleções
 
-**Objetivo:** Reduzir o tamanho de arquivos para economizar espaço de armazenamento ou acelerar transmissão.
+**Objetivo:** Organizar uma lista de números ou objetos para facilitar busca, visualização ou processamento.
 
-**Contrato:** "Comprimir dados mantendo integridade para posterior descompressão".
+**Contrato:** “Ordenar a coleção em ordem crescente”.
 
-**Implementação A:** Comprimir usando ZIP (para múltiplos arquivos ou pastas).
+**Implementação A:** Ordenação por Bubble Sort.
 
-**Implementação B:** Comprimir usando GZIP (para arquivo único ou stream de dados).
+**Implementação B:** Ordenação por Quick Sort.
 
-**Política:** Se houver múltiplos arquivos ou estrutura de pastas, usar ZIP. Se for um único arquivo grande ou dados em streaming (como logs ou backups), usar GZIP.
+**Política:** Para listas pequenas Bubble Sort; para listas médias ou grandes QuickSort.
 
-**Risco/Observação:** ZIP adiciona overhead para gerenciar múltiplos arquivos (maior que GZIP para arquivos únicos). GZIP não suporta múltiplos arquivos nativamente sem empacotamento prévio (como tar). Ambos têm custo de CPU para compressão/descompressão.
-
+**Risco/Observação:** BubbleSort é lento em listas grandes; QuickSort tem pior caso custoso em dados quase ordenados.
