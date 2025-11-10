@@ -8,40 +8,37 @@
 
 ## Sumário das Fases
 
-- [Fase 1 - Heurística antes do código (Mapa Mental)](#fase-1---heurística-antes-do-código-mapa-mental)
+- [Fase 0 - Aquecimento Conceitual: Contratos de Capacidade](#fase-0---aquecimento-conceitual-contratos-de-capacidade)
 
 ---
 
-## Fase 1 - Heurística antes do código (Mapa Mental)
+## Fase 0 - Aquecimento Conceitual: Contratos de Capacidade
 
 ### Objetivo
-Desenhar um mapa de evolução para um problema trivial, mostrando a transição de código procedural para orientado a objetos e finalmente usando interfaces.
+Treinar o olhar de design: identificar um objetivo fixo e peças alternáveis que realizam esse objetivo por caminhos diferentes. Nomear o contrato (o que fazer) e duas implementações (como fazer), além de propor uma política simples para escolher entre as peças.
 
 ### Como executar
-Esta fase é apenas conceitual, não há código para executar.
+Esta fase é apenas conceitual, sem código. O documento completo está em: `src/fase-00-aquecimento/CONTRATOS-DE-CAPACIDADE.md`
 
-### Documentação
-O mapa mental completo está disponível em: `src/fase-01-heuristica/MAPA-MENTAL.md`
+### Casos Apresentados
 
-### Decisões de Design
+**Caso 1: Codificação de Mensagem**
+- Objetivo: Proteger conteúdo de mensagem
+- Contrato: "Transformar texto em versão criptografada"
+- Implementações: Base64 vs Cifra de César
+- Política: Base64 para logs internos; Cifra de César para dados sensíveis básicos
 
-- **Problema escolhido:** Codificação de mensagem para proteção de conteúdo
-- **Contratos:** Interface `ICodificador` com métodos `Codificar(texto)` e `Decodificar(texto)`
-- **Aplicação do ISP:** Interface pequena e coesa com dois métodos relacionados
-- **Ponto de composição:** Cliente (GerenciadorMensagens) recebe o codificador no construtor
-- **Alternância:** Possível trocar método de codificação (Base64, Cifra César) sem modificar o cliente
+**Caso 2: Compressão de Arquivos**
+- Objetivo: Reduzir tamanho de arquivos
+- Contrato: "Comprimir dados mantendo integridade"
+- Implementações: ZIP vs GZIP
+- Política: ZIP para múltiplos arquivos; GZIP para arquivo único ou streaming
 
 ### Checklist de Qualidade
 
-- [x] Contrato coeso (dois métodos bem definidos e relacionados)
-- [x] Cliente não conhece implementações concretas
-- [x] Novos métodos de codificação podem ser adicionados sem modificar código existente
-- [x] Ausência de switch/if espalhados após uso de interfaces
-- [x] Cada classe tem uma única responsabilidade
-
-### Sinais de Alerta Identificados
-
-1. Switch/if por tipo de codificação espalhado no código
-2. Classe com muitas responsabilidades (codificar + validar + salvar + enviar)
-3. Implementações que não usam todos os métodos da interface
+- [x] Cada caso tem objetivo, contrato, duas implementações e política bem definida
+- [x] O contrato não revela "como" (é descritivo, não técnico)
+- [x] As implementações são alternáveis (não são variações cosméticas)
+- [x] A política é concreta e aplicável (não ambígua)
+- [x] Há risco/observação por caso
 

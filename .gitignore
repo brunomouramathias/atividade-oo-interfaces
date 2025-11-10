@@ -8,4 +8,5 @@ bin/
 obj/
 *.user
 *.suo
+.fases-futuras/
 
