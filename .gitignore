@@ -1,0 +1,11 @@
+*.pdf
+*.txt
+*.pyc
+__pycache__/
+.vs/
+.vscode/
+bin/
+obj/
+*.user
+*.suo
+
