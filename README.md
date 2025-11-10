@@ -10,6 +10,7 @@
 
 - [Fase 0 - Aquecimento Conceitual: Contratos de Capacidade](#fase-0---aquecimento-conceitual-contratos-de-capacidade)
 - [Fase 1 - Heurística antes do código (Mapa Mental)](#fase-1---heurística-antes-do-código-mapa-mental)
+- [Fase 2 - Procedural Mínimo](#fase-2---procedural-mínimo)
 
 ---
 
@@ -94,4 +95,67 @@ Esta fase é conceitual (sem código executável). O mapa mental completo está 
 - [x] Explica o que melhora e o que fica rígido no OO sem interface
 - [x] Define contrato claro e ponto de composição externo
 - [x] Lista 3 sinais de alerta com explicação
+
+---
+
+## Fase 2 - Procedural Mínimo
+
+### Objetivo
+Implementar a ideia de modos (mínimo 3 + padrão) para um objetivo simples, demonstrando a abordagem procedural com `switch`.
+
+### Implementações Criadas
+
+**Exemplo 1: Codificação de Mensagem**
+- Modos: `base64`, `cesar`, `invertido`, `padrão`
+- Arquivo: `Codificacao.cs`
+
+**Exemplo 2: Ordenação de Lista**
+- Modos: `bubble`, `quick`, `insertion`, `padrão`
+- Arquivo: `Ordenacao.cs`
+
+### Como executar
+
+```bash
+cd src/fase-02-procedural
+dotnet run
+```
+
+### 5 Cenários de Teste por Exemplo
+
+**Codificação:**
+1. Texto simples com Base64
+2. Texto com caracteres especiais (Cifra de César)
+3. Texto vazio
+4. Modo não reconhecido (padrão)
+5. Texto longo (fronteira de performance)
+
+**Ordenação:**
+1. Lista pequena (Bubble Sort)
+2. Lista já ordenada (Quick Sort)
+3. Lista com duplicatas (Insertion Sort)
+4. Lista vazia
+5. Lista grande (fronteira de performance)
+
+### Por que não escala
+
+1. **Adição de novos modos:** Cada novo modo exige modificar o `switch` central
+2. **Lógica acoplada:** Decisão de "qual usar" está misturada com a execução
+3. **Testes difíceis:** Não há como testar algoritmos isoladamente
+4. **Ramificações espalhadas:** `switch` se repete em vários pontos
+5. **Strings mágicas:** Modos como literais sem verificação em compilação
+
+### Decisões de Design
+
+- **Abordagem:** Procedural com `switch expression`
+- **Modos:** Strings literais para identificação
+- **Algoritmos:** Funções privadas para cada variação
+- **Retorno:** Modo padrão quando string não reconhecida
+
+### Checklist de Qualidade
+
+- [x] Implementa mínimo 3 modos + padrão
+- [x] 5 cenários de teste descritos por exemplo
+- [x] Explicação clara do por que não escala
+- [x] Código funcional e executável
+- [x] Documentação completa em `ANALISE.md`
 
