@@ -11,6 +11,7 @@
 - [Fase 0 - Aquecimento Conceitual: Contratos de Capacidade](#fase-0---aquecimento-conceitual-contratos-de-capacidade)
 - [Fase 1 - Heurística antes do código (Mapa Mental)](#fase-1---heurística-antes-do-código-mapa-mental)
 - [Fase 2 - Procedural Mínimo](#fase-2---procedural-mínimo)
+- [Fase 3 - Interfaces](#fase-3---interfaces)
 
 ---
 
@@ -158,4 +159,65 @@ dotnet run
 - [x] Explicação clara do por que não escala
 - [x] Código funcional e executável
 - [x] Documentação completa em `ANALISE.md`
+
+---
+
+## Fase 3 - Interfaces
+
+### Objetivo
+Transformar o código procedural da Fase 2 em uma solução orientada a objetos usando interfaces, eliminando o `switch` e aplicando princípios SOLID.
+
+### Implementações Criadas
+
+**Interface:** `IAlgoritmoOrdenacao`
+- Contrato: `Ordenar(int[] lista)`
+
+**Implementações:**
+- `BubbleSortAlgorithm` - Para listas pequenas
+- `InsertionSortAlgorithm` - Para listas médias
+- `QuickSortAlgorithm` - Para listas grandes
+
+**Componentes:**
+- `ServicoOrdenacao` - Usa a interface (inversão de dependência)
+- `CatalogoAlgoritmos` - Seleciona algoritmo por política
+
+### Como executar
+
+```bash
+cd src/fase-03-interfaces
+dotnet run
+```
+
+### 5 Cenários Demonstrados
+
+1. **Lista pequena:** Seleção automática de Bubble Sort para 5 elementos
+2. **Lista média:** Seleção automática de Insertion Sort para 20 elementos
+3. **Lista grande:** Seleção automática de Quick Sort para 100 elementos
+4. **Seleção manual:** Escolha explícita do algoritmo desejado
+5. **Comparação:** Execução dos três algoritmos na mesma lista
+
+### Melhorias em relação à Fase 2
+
+1. **Eliminação do switch:** Não há mais ramificações centralizadas
+2. **Open/Closed:** Novos algoritmos sem modificar código existente
+3. **Testes isolados:** Cada algoritmo testável independentemente
+4. **Política configurável:** Lógica de seleção separada do cliente
+5. **Baixo acoplamento:** Cliente depende apenas da interface
+
+### Decisões de Design
+
+- **Inversão de Dependência (DIP):** Serviço depende de abstração, não de concreções
+- **Injeção de Dependência:** Algoritmo injetado no construtor
+- **Strategy Pattern:** Cada algoritmo como estratégia intercambiável
+- **Catálogo de Componentes:** Registro centralizado de implementações
+
+### Checklist de Qualidade
+
+- [x] Interface clara com contrato bem definido
+- [x] Mínimo 3 implementações concretas
+- [x] Serviço que usa inversão de dependência
+- [x] Catálogo com política de seleção
+- [x] 5 cenários demonstrados
+- [x] Código funcional e executável
+- [x] Documentação completa em `EVOLUCAO.md`
 
