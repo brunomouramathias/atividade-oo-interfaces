@@ -13,6 +13,7 @@
 - [Fase 2 - Procedural Mínimo](#fase-2---procedural-mínimo)
 - [Fase 3 - Interfaces](#fase-3---interfaces)
 - [Fase 4 - Interface Plugável e Testável](#fase-4---interface-plugável-e-testável)
+- [Fase 5 - Repository InMemory](#fase-5---repository-inmemory)
 
 ---
 
@@ -318,4 +319,135 @@ dotnet run
 - [x] Testes executam sem I/O
 - [x] Código funcional e executável
 - [x] Documentação completa em `COMPOSICAO-E-TESTES.md`
+
+---
+
+## Fase 5 - Repository InMemory
+
+### Objetivo
+Introduzir o padrão **Repository** como ponto único de acesso a dados, usando um domínio simples (Book) com implementação InMemory baseada em coleção Dictionary.
+
+**Ideia-chave:** O cliente fala só com o Repository, nunca com coleções diretamente.
+
+### Implementações Criadas
+
+**Contrato:** `IRepository<T, TId>`
+- Operações: `Add`, `GetById`, `ListAll`, `Update`, `Remove`
+- Genérico para qualquer tipo e identificador
+
+**Implementação:** `InMemoryRepository<T, TId>`
+- Armazenamento: `Dictionary<TId, T>`
+- Sem I/O: Totalmente em memória
+- Configurável: Recebe `Func<T, TId>` para extrair ID
+
+**Domínio:** `Book`
+- Record imutável com Id, Title, Author
+- Simples e focado
+
+**Serviço:** `BookService`
+- Validações de domínio
+- Orquestra operações com Repository
+- Não acessa coleções diretamente
+
+### Como executar
+
+```bash
+cd src/fase-05-repository-inmemory
+dotnet run
+```
+
+### Testes e Cenários
+
+**8 Testes Automatizados:**
+1. Add_Then_ListAll_ShouldReturnOneItem
+2. GetById_Existing_ShouldReturnEntity
+3. GetById_Missing_ShouldReturnNull
+4. Update_Existing_ShouldReturnTrue
+5. Update_Missing_ShouldReturnFalse
+6. Remove_Existing_ShouldReturnTrue
+7. Remove_Missing_ShouldReturnFalse
+8. MultipleOperations_ShouldWork
+
+**6 Cenários de Uso:**
+1. Cadastro de livros
+2. Listagem completa
+3. Busca por ID (existente e inexistente)
+4. Atualização de dados
+5. Remoção de item
+6. Operações em lote
+
+### Benefícios do Padrão Repository
+
+1. **Abstração de Persistência**
+   - Cliente não sabe como dados são armazenados
+   - Fácil trocar InMemory por CSV, JSON, BD
+
+2. **Testabilidade**
+   - Repository facilmente mockável
+   - Testes rápidos sem I/O real
+
+3. **Centralização**
+   - Único ponto de acesso a dados
+   - Lógica de persistência isolada
+
+4. **Flexibilidade**
+   - Trocar implementação sem alterar cliente
+   - Adicionar cache, logging transparentemente
+
+### Decisões de Design
+
+**Política de ID:** O ID vem do domínio (fornecido externamente)
+```csharp
+new InMemoryRepository<Book, int>(book => book.Id)
+```
+
+**Retorno de coleções:** `IReadOnlyList<T>` para não expor coleções mutáveis
+
+**Separação de responsabilidades:**
+- Repository: acesso a dados
+- Service: regras de negócio
+- Model: estrutura de dados
+
+### Arquitetura
+
+```
+BookService (Cliente)
+    ↓
+IRepository<Book, int> (Contrato)
+    ↓
+InMemoryRepository<Book, int> (Implementação)
+    ↓
+Dictionary<int, Book> (Armazenamento)
+```
+
+### Princípios SOLID Aplicados
+
+- **S** - Repository focado em acesso a dados
+- **O** - Aberto para novas implementações (CSV, JSON)
+- **L** - Implementações intercambiáveis
+- **I** - Interface coesa com operações essenciais
+- **D** - Cliente depende de abstração
+
+### Preparação para Próximas Fases
+
+A arquitetura está pronta para:
+- Fase 6: Repository com CSV
+- Fase 7: Repository com JSON  
+- Fase 8: Repository com Banco de Dados
+
+**Facilidade:** Apenas trocar implementação, cliente não muda!
+
+### Checklist de Qualidade
+
+- [x] Contrato genérico `IRepository<T, TId>`
+- [x] Implementação InMemory com Dictionary
+- [x] Domínio simples (Book)
+- [x] Serviço que usa apenas o Repository
+- [x] 8 testes automatizados cobrindo operações
+- [x] Testes de fronteira (ID ausente, etc.)
+- [x] Sem I/O (totalmente em memória)
+- [x] Cliente não acessa coleções diretamente
+- [x] IReadOnlyList para proteção
+- [x] Código funcional e executável
+- [x] Documentação completa em `REPOSITORY-PATTERN.md`
 
