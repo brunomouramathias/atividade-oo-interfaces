@@ -10,3 +10,10 @@ obj/
 *.suo
 .fases-futuras/
 
+# Arquivos de cache do NuGet e .NET
+*.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+project.assets.json
+
