@@ -12,6 +12,7 @@
 - [Fase 1 - Heurística antes do código (Mapa Mental)](#fase-1---heurística-antes-do-código-mapa-mental)
 - [Fase 2 - Procedural Mínimo](#fase-2---procedural-mínimo)
 - [Fase 3 - Interfaces](#fase-3---interfaces)
+- [Fase 4 - Interface Plugável e Testável](#fase-4---interface-plugável-e-testável)
 
 ---
 
@@ -220,4 +221,101 @@ dotnet run
 - [x] 5 cenários demonstrados
 - [x] Código funcional e executável
 - [x] Documentação completa em `EVOLUCAO.md`
+
+---
+
+## Fase 4 - Interface Plugável e Testável
+
+### Objetivo
+Consolidar a ideia de interfaces plugáveis introduzindo:
+- Contrato explícito para o passo variável
+- Ponto único de composição (catálogo)
+- Cliente dependendo apenas do contrato
+- **Testes com dublês** (fake/stub) sem I/O real
+
+### Implementações Criadas
+
+**Interface:** `IAlgoritmoOrdenacao`
+- Contrato: `Ordenar(int[] lista)`
+
+**Implementações (sealed):**
+- `BubbleSortAlgorithm` - Para listas pequenas
+- `InsertionSortAlgorithm` - Para listas médias
+- `QuickSortAlgorithm` - Para listas grandes
+
+**Componentes:**
+- `ServicoOrdenacao` - Cliente que usa apenas a interface
+- `CatalogoAlgoritmos` - Ponto único de composição com políticas
+- `FakeAlgoritmoOrdenacao` - Dublê para testes sem I/O
+
+**Testes:**
+- `TestesComDubles` - 5 testes automatizados com fake
+
+### Como executar
+
+```bash
+cd src/fase-04-plugavel-testavel
+dotnet run
+```
+
+### Cenários Demonstrados
+
+1. **Testes Automatizados:** 5 testes com dublê executados automaticamente
+2. **Seleção Manual:** Usuário escolhe o algoritmo desejado
+3. **Seleção Automática:** Por tamanho da lista (pequena/média/grande)
+4. **Plugabilidade:** Demonstração dos três algoritmos na mesma lista
+
+### Diferencial da Fase 4
+
+**Novidade principal:** **Testes com dublês**
+- Fake implementa a mesma interface
+- Testes rápidos e determinísticos
+- Sem I/O real
+- Verifica comportamento do cliente isoladamente
+
+### Testes Implementados
+
+1. **DeveUsarAlgoritmoInjetado** - Verifica injeção de dependência
+2. **ListaVazia_DeveRetornarListaVazia** - Testa caso de borda
+3. **ListaNula_DeveRetornarListaVazia** - Testa validação
+4. **AlgoritmoNulo_DeveLancarExcecao** - Testa proteção contra null
+5. **DeveDelegarParaAlgoritmo** - Verifica delegação correta
+
+### Benefícios Alcançados
+
+1. **Testabilidade Total**
+   - Dublês permitem testar sem implementações reais
+   - Testes rápidos (sem I/O)
+   - Testes determinísticos (sempre mesmo resultado)
+
+2. **Alternância Verdadeira**
+   - Cliente não conhece implementações concretas
+   - Composição centralizada no catálogo
+   - Política externa ao cliente
+
+3. **Manutenibilidade**
+   - Validação no cliente
+   - Classes sealed (não podem ser herdadas incorretamente)
+   - Responsabilidades bem definidas
+
+### Princípios SOLID Aplicados
+
+- **S** - Single Responsibility: Cada classe tem uma responsabilidade
+- **O** - Open/Closed: Aberto para extensão, fechado para modificação
+- **L** - Liskov Substitution: Implementações são intercambiáveis
+- **I** - Interface Segregation: Interface coesa com único método
+- **D** - Dependency Inversion: Cliente depende de abstração
+
+### Checklist de Qualidade
+
+- [x] Interface clara e bem definida
+- [x] Mínimo 3 implementações sealed
+- [x] Cliente com injeção de dependência
+- [x] Validação de parâmetros
+- [x] Catálogo centralizado
+- [x] Dublê (fake) implementado
+- [x] 5 testes automatizados
+- [x] Testes executam sem I/O
+- [x] Código funcional e executável
+- [x] Documentação completa em `COMPOSICAO-E-TESTES.md`
 

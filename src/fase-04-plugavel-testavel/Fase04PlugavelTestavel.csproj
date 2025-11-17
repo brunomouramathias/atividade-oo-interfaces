@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Fase04PlugavelTestavel.Tests\**" />
+    <EmbeddedResource Remove="Fase04PlugavelTestavel.Tests\**" />
+    <None Remove="Fase04PlugavelTestavel.Tests\**" />
+  </ItemGroup>
+
+</Project>
