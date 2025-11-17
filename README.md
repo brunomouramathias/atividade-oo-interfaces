@@ -14,6 +14,7 @@
 - [Fase 3 - Interfaces](#fase-3---interfaces)
 - [Fase 4 - Interface Plugável e Testável](#fase-4---interface-plugável-e-testável)
 - [Fase 5 - Repository InMemory](#fase-5---repository-inmemory)
+- [Fase 6 - Repository CSV](#fase-6---repository-csv)
 
 ---
 
@@ -450,4 +451,354 @@ A arquitetura está pronta para:
 - [x] IReadOnlyList para proteção
 - [x] Código funcional e executável
 - [x] Documentação completa em `REPOSITORY-PATTERN.md`
+
+---
+
+## Fase 6 - Repository CSV
+
+### Objetivo
+Evoluir o Repository para **persistir em arquivo CSV**, mantendo o mesmo contrato `IRepository<T, TId>` mas agora com dados sobrevivendo em disco.
+
+**Ideia-chave:** Dados persistem em arquivo `.csv` com cabeçalho, encoding UTF-8 e escape correto.
+
+### Estrutura Organizada em Pastas
+
+```
+fase-06-repository-csv/
+├── Domain/              # Modelos de domínio
+│   └── Book.cs
+├── Repository/          # Lógica de persistência
+│   ├── IRepository.cs
+│   └── CsvBookRepository.cs
+├── Services/            # Regras de negócio
+│   └── BookService.cs
+├── Tests/               # Testes de integração
+│   └── TestesRepositorioCsv.cs
+├── Program.cs           # Demonstração
+└── REPOSITORY-CSV.md    # Documentação
+```
+
+**Organização:** Código estruturado em pastas para melhor navegação no GitHub!
+
+### Implementações Criadas
+
+**Contrato:** `IRepository<T, TId>` (reutilizado da Fase 5)
+
+**Implementação CSV:** `CsvBookRepository`
+- Armazenamento: Arquivo `.csv` em disco
+- Encoding: UTF-8
+- Cabeçalho: `Id,Title,Author`
+- Escape: Vírgulas e aspas corretamente tratadas
+
+**Formato CSV:**
+```csv
+Id,Title,Author
+1,Código Limpo,Robert C. Martin
+10,"Livro, com vírgula","Autor ""com aspas"""
+```
+
+### Como executar
+
+```bash
+cd src/fase-06-repository-csv
+dotnet run
+```
+
+### Testes e Cenários
+
+**10 Testes de Integração:**
+1. ListAll_WhenFileDoesNotExist_ShouldReturnEmpty
+2. Add_Then_ListAll_ShouldPersistInFile
+3. Add_WithCommaAndQuotes_ShouldEscapeCorrectly
+4. GetById_Existing_ShouldReturnBook
+5. GetById_Missing_ShouldReturnNull
+6. Update_Existing_ShouldPersistChanges
+7. Update_Missing_ShouldReturnFalse
+8. Remove_Existing_ShouldDeleteFromFile
+9. Remove_Missing_ShouldReturnFalse
+10. MultipleOperations_ShouldPersist
+
+**6 Cenários de Uso:**
+1. Cadastro de livros
+2. Listagem de arquivo CSV
+3. Campos com vírgulas e aspas (escape)
+4. Atualização persistida
+5. Remoção do arquivo
+6. Demonstração de persistência entre execuções
+
+### Formato CSV - Detalhes Técnicos
+
+**Regras de Escape:**
+- **Vírgulas:** Campo com `,` é colocado entre `"aspas"`
+- **Aspas:** `"` é escapado como `""`
+- **Quebras de linha:** Campo com `\n` entre aspas
+- **Encoding:** UTF-8 para acentuação
+
+**Política de ID:** Fornecido pelo domínio (externo)
+
+### Métodos Principais
+
+**Load()** - Carrega do arquivo
+- Verifica existência do arquivo
+- Parse com tratamento de escape
+- Pula cabeçalho se existir
+
+**Save()** - Salva no arquivo
+- Gera cabeçalho
+- Ordena por ID
+- Escape de campos especiais
+
+**Escape()** - Trata caracteres especiais
+- Detecta necessidade de aspas
+- Escapa aspas duplas
+
+**SplitCsvLine()** - Parse de linha CSV
+- Respeita campos entre aspas
+- Trata aspas escapadas
+
+### Diferenças: InMemory vs CSV
+
+| Aspecto | Fase 5 (InMemory) | Fase 6 (CSV) |
+|---------|-------------------|--------------|
+| Armazenamento | Dictionary (RAM) | Arquivo .csv (disco) |
+| Persistência | ❌ Perdida ao fechar | ✅ Sobrevive |
+| Performance | Muito rápida | Mais lenta (I/O) |
+| Legibilidade | N/A | Humano pode ler |
+| Portabilidade | N/A | Excel/LibreOffice |
+| Encoding | N/A | UTF-8 |
+| Testes | Sem I/O | Arquivo temporário |
+
+### Vantagens do CSV
+
+1. **Persistência Real**
+   - Dados não são perdidos
+   - Sobrevivem entre execuções
+
+2. **Portabilidade**
+   - Formato universal
+   - Integra com ferramentas
+
+3. **Legibilidade**
+   - Humano pode ler/editar
+   - Útil para depuração
+
+4. **Compatibilidade**
+   - Abre no Excel
+   - Importa em BDs
+
+### Limitações Conhecidas
+
+⚠️ **Implementação didática com limitações:**
+
+- Sem tratamento de concorrência
+- Performance em listas grandes (carrega/salva tudo)
+- Sem versionamento de esquema
+- Sem transações
+
+**Em produção:** Usar bibliotecas especializadas ou banco de dados.
+
+### Preparação para Próximas Fases
+
+A arquitetura está pronta para:
+- Fase 7: Repository com JSON
+- Fase 8: Repository com Banco de Dados
+
+**Facilidade:** Apenas trocar implementação, cliente não muda!
+
+### Checklist de Qualidade
+
+- [x] Contrato `IRepository<T, TId>` reutilizado
+- [x] Implementação `CsvBookRepository` completa
+- [x] Formato CSV com cabeçalho
+- [x] Encoding UTF-8
+- [x] Escape de vírgulas e aspas
+- [x] 10 testes de integração
+- [x] Testes com arquivo temporário
+- [x] Casos especiais (vírgulas, aspas)
+- [x] Persistência real demonstrada
+- [x] **Código organizado em pastas** (Domain, Repository, Services, Tests)
+- [x] .gitignore para arquivos CSV
+- [x] Documentação completa em `REPOSITORY-CSV.md`
+
+
+
+**Ideia-chave:** Os dados agora **sobrevivem** entre execuções em arquivo `.csv` legível.
+
+### Estrutura Organizada em Pastas
+
+```
+fase-06-repository-csv/
+├── Core/               # Contratos e domínio
+│   ├── IRepository.cs
+│   └── Book.cs
+├── Infrastructure/     # Implementação CSV
+│   └── CsvBookRepository.cs
+├── Services/          # Lógica de aplicação
+│   └── BookService.cs
+├── Tests/             # Testes de integração
+│   └── TestesRepositorio.cs
+├── Program.cs
+└── PERSISTENCIA-CSV.md
+```
+
+**Organização por responsabilidade** - não mais arquivos soltos!
+
+### Implementações Criadas
+
+**Contrato:** `IRepository<T, TId>` (reutilizado da Fase 5)
+- Sem mudanças na interface!
+
+**Implementação:** `CsvBookRepository`
+- Persistência em arquivo CSV
+- Encoding: UTF-8
+- Escape correto: vírgulas e aspas
+- Cabeçalho: `Id,Title,Author`
+
+**Domínio:** `Book` (reutilizado)
+- Record imutável
+
+**Serviço:** `BookService` (reutilizado)
+- Mesmas validações
+
+### Como executar
+
+```bash
+cd src/fase-06-repository-csv
+dotnet run
+```
+
+### Formato CSV
+
+```csv
+Id,Title,Author
+1,Código Limpo,Robert C. Martin
+2,"Livro, com vírgula","Autor ""com aspas"""
+3,Domain-Driven Design,Eric Evans
+```
+
+### Testes Implementados (10 testes)
+
+**Testes de Fronteira:**
+1. ListAll_WhenFileDoesNotExist_ShouldReturnEmpty
+2. Add_Then_ListAll_ShouldPersistInFile
+3. Add_WithCommasAndQuotes_ShouldEscapeCorrectly
+
+**Testes CRUD:**
+4. GetById_Existing_ShouldReturnBook
+5. GetById_Missing_ShouldReturnNull
+6. Update_Existing_ShouldPersistChanges
+7. Update_Missing_ShouldReturnFalse
+8. Remove_Existing_ShouldDeleteFromFile
+9. Remove_Missing_ShouldReturnFalse
+
+**Teste de Integração:**
+10. MultipleOperations_ShouldPersist
+
+**Todos usam arquivo temporário** para não afetar dados reais.
+
+### Cenários Demonstrados
+
+1. **Cadastro** - Persistência em CSV
+2. **Listagem** - Carregamento do arquivo
+3. **Caracteres Especiais** - Vírgulas e aspas
+4. **Atualização** - Modificação persistente
+5. **Remoção** - Exclusão do arquivo
+6. **Persistência** - Dados sobrevivem entre execuções
+
+### Escape de Caracteres Especiais
+
+**Regras implementadas:**
+- Vírgula → Campo entre aspas: `"Livro, vírgula"`
+- Aspas → Duplicar: `"Autor ""aspas"""`
+- Quebra de linha → Campo entre aspas
+
+**Encoding:** UTF-8 para suporte a acentos
+
+### Comparação: InMemory vs CSV
+
+| Aspecto | Fase 5 (InMemory) | Fase 6 (CSV) |
+|---------|-------------------|--------------|
+| Persistência | ❌ Volátil | ✅ Em arquivo |
+| Performance | ⚡ Rápida | 🐢 I/O disk |
+| Legibilidade | ❌ Memória | ✅ Texto |
+| Contrato | IRepository | IRepository |
+| Cliente | Não muda | Não muda |
+
+**Cliente permanece igual!** Apenas muda a composição:
+
+```csharp
+// Fase 5
+IRepository<Book, int> repo = new InMemoryRepository<Book, int>(b => b.Id);
+
+// Fase 6
+IRepository<Book, int> repo = new CsvBookRepository("books.csv");
+```
+
+### Benefícios da Organização em Pastas
+
+**Antes:** Todos os arquivos soltos  
+**Agora:** Organizado por responsabilidade
+
+**Vantagens:**
+- ✅ Fácil localizar arquivos
+- ✅ Clara separação (Core, Infrastructure, Services, Tests)
+- ✅ Escalável para mais arquivos
+- ✅ Profissional no GitHub
+
+### Decisões de Design
+
+**Política de ID:** Fornecido externamente (mesmo da Fase 5)
+
+**Parser CSV:** Manual (sem biblioteca)
+- Respeita aspas
+- Trata escape
+- UTF-8
+
+**Persistência:** A cada operação
+- Trade-off: durabilidade vs performance
+
+**Formato:** Padrão CSV
+- Abre em Excel, Google Sheets
+- Legível por humanos
+
+### Limitações Conhecidas
+
+⚠️ **Não implementado (propositalmente simples):**
+- Concorrência (múltiplos processos)
+- Transações
+- Versionamento de schema
+- Cache (recarrega arquivo inteiro)
+
+**Para produção:** Usar biblioteca (CsvHelper) ou BD.
+
+### Preparação para Próximas Fases
+
+Arquitetura pronta para:
+- Fase 7: Repository com JSON
+- Fase 8: Repository com Banco de Dados
+
+**Mesmo contrato, implementações diferentes!** 🔌
+
+### Princípios Aplicados
+
+- **D** (DIP): Cliente depende de IRepository
+- **S** (SRP): Cada classe uma responsabilidade
+- **O** (OCP): Aberto para novas implementações
+- **Separation of Concerns**: Pastas por responsabilidade
+
+### Checklist de Qualidade
+
+- [x] Contrato IRepository reutilizado
+- [x] Implementação CsvBookRepository
+- [x] Persistência em CSV com cabeçalho
+- [x] Encoding UTF-8
+- [x] Escape correto (vírgulas e aspas)
+- [x] 10 testes de integração
+- [x] Testes com arquivo temporário
+- [x] Organização em pastas (Core, Infrastructure, Services, Tests)
+- [x] Parser CSV manual
+- [x] Cliente não muda (mesma interface)
+- [x] 6 cenários demonstrados
+- [x] Código funcional e executável
+- [x] Documentação completa em `PERSISTENCIA-CSV.md`
 
