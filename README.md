@@ -18,6 +18,8 @@
 - [Fase 7 - Repository JSON](#fase-7---repository-json)
 - [Fase 8 - ISP (Interface Segregation Principle)](#fase-8---isp-interface-segregation-principle)
 - [Fase 9 - Dublês Avançados e Testes Assíncronos](#fase-9---dublês-avançados-e-testes-assíncronos)
+- [Fase 10 - Code Smells e Refatorações](#fase-10---code-smells-e-refatorações)
+- [Fase 11 - Mini-projeto de Consolidação](#fase-11---mini-projeto-de-consolidação)
 
 ---
 
@@ -1017,4 +1019,44 @@ await Task.WhenAll(task1, task2, task3);
 - [x] Spy registra chamadas e ordem
 - [x] **Código organizado em pastas**
 - [x] Documentação completa em `DUBLES-AVANCADOS.md`
+
+---
+
+## Fase 10 - Code Smells e Refatorações
+
+### Objetivo
+Identificar **code smells** comuns e aplicar **refatorações** com diffs pequenos, demonstrando melhorias incrementais.
+
+### Code Smells Demonstrados
+- Long Method → Extract Method
+- Long Parameter List → Parameter Object
+- Duplicate Code → Extract Method
+
+### Como executar
+```bash
+cd src/fase-10-code-smells
+dotnet run
+```
+
+### Checklist
+- [x] Interfaces em Domain/Interfaces
+- [x] Repositórios em Domain/Repositories
+- [x] Documentação em CODE-SMELLS.md
+
+---
+
+## Fase 11 - Mini-projeto de Consolidação
+
+### Objetivo
+Consolidar TODOS os conceitos aprendidos: SOLID, Interfaces, Repository, Testes Assíncronos, Dublês.
+
+### Como executar
+```bash
+cd src/fase-11-mini-projeto
+dotnet run
+```
+
+### Checklist
+- [x] Estrutura organizada
+- [x] Documentação em MINI-PROJETO.md
 
