@@ -15,6 +15,7 @@
 - [Fase 4 - Interface Plugável e Testável](#fase-4---interface-plugável-e-testável)
 - [Fase 5 - Repository InMemory](#fase-5---repository-inmemory)
 - [Fase 6 - Repository CSV](#fase-6---repository-csv)
+- [Fase 7 - Repository JSON](#fase-7---repository-json)
 
 ---
 
@@ -619,4 +620,198 @@ A arquitetura está pronta para:
 - [x] **Código organizado em pastas** (Domain, Repository, Services, Tests)
 - [x] .gitignore para arquivos CSV
 - [x] Documentação completa em `REPOSITORY-CSV.md`
+
+---
+
+## Fase 7 - Repository JSON
+
+### Objetivo
+Evoluir o Repository da Fase 6 para **persistir em arquivo JSON** usando `System.Text.Json`, mantendo o mesmo contrato `IRepository<T, TId>` mas agora com formato estruturado e legível.
+
+**Ideia-chave:** Dados persistem em arquivo `.json` com formatação indentada, usando o serializer nativo do .NET.
+
+### Estrutura Organizada em Pastas
+
+```
+fase-07-repository-json/
+├── Domain/              # Modelos de domínio
+│   └── Book.cs
+├── Repository/          # Lógica de persistência
+│   ├── IRepository.cs
+│   └── JsonBookRepository.cs
+├── Services/            # Regras de negócio
+│   └── BookService.cs
+├── Tests/               # Testes de integração
+│   └── TestesRepositorioJson.cs
+├── Program.cs           # Demonstração
+└── REPOSITORY-JSON.md   # Documentação
+```
+
+**Organização:** Mesma estrutura profissional da Fase 6!
+
+### Implementações Criadas
+
+**Contrato:** `IRepository<T, TId>` (reutilizado da Fase 5 e 6)
+
+**Implementação JSON:** `JsonBookRepository`
+- Armazenamento: Arquivo `.json` em disco
+- Serialização: System.Text.Json (nativo do .NET)
+- Formatação: Indentação automática (WriteIndented)
+- Naming: camelCase (PropertyNamingPolicy)
+- Escape: Automático (aspas, barras, caracteres especiais)
+
+**Formato JSON:**
+```json
+[
+  {
+    "id": 1,
+    "title": "Código Limpo",
+    "author": "Robert C. Martin"
+  },
+  {
+    "id": 10,
+    "title": "Livro com \"aspas\" e /barras/",
+    "author": "Autor: João & Maria"
+  }
+]
+```
+
+### Como executar
+
+```bash
+cd src/fase-07-repository-json
+dotnet run
+```
+
+### Testes e Cenários
+
+**10 Testes de Integração:**
+1. ListAll_WhenFileDoesNotExist_ShouldReturnEmpty
+2. Add_Then_ListAll_ShouldPersistInFile
+3. Add_WithSpecialCharacters_ShouldHandleCorrectly
+4. GetById_Existing_ShouldReturnBook
+5. GetById_Missing_ShouldReturnNull
+6. Update_Existing_ShouldPersistChanges
+7. Update_Missing_ShouldReturnFalse
+8. Remove_Existing_ShouldDeleteFromFile
+9. Remove_Missing_ShouldReturnFalse
+10. MultipleOperations_ShouldPersist
+
+**6 Cenários de Uso:**
+1. Cadastro de livros
+2. Listagem de arquivo JSON
+3. Caracteres especiais (aspas, barras, símbolos)
+4. Atualização persistida
+5. Remoção do arquivo
+6. Demonstração de persistência entre execuções
+
+### Formato JSON - Detalhes Técnicos
+
+**Configuração do Serializer:**
+```csharp
+_options = new JsonSerializerOptions
+{
+    WriteIndented = true,
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+};
+```
+
+**Vantagens:**
+- Escape automático de caracteres especiais
+- Formatação indentada para legibilidade
+- Sem parse manual necessário
+- Tipagem forte na deserialização
+
+### Métodos Principais
+
+**Load()** - Deserializa do arquivo
+- Verifica existência do arquivo
+- Deserializa com JsonSerializer.Deserialize<List<Book>>()
+- Tratamento de erros (retorna lista vazia)
+
+**Save()** - Serializa no arquivo
+- Ordena por ID
+- Serializa com JsonSerializer.Serialize()
+- Formatação automática
+
+### Diferenças: CSV vs JSON
+
+| Aspecto | Fase 6 (CSV) | Fase 7 (JSON) |
+|---------|--------------|---------------|
+| Formato | Texto com vírgulas | Estruturado JSON |
+| Legibilidade | Boa (Excel) | Excelente (estruturado) |
+| Escape Manual | Sim (vírgulas, aspas) | Não (automático) |
+| Biblioteca | Manual (SplitCsvLine) | System.Text.Json |
+| Complexidade | Média (parse manual) | Baixa (serialização automática) |
+| Tipagem | Texto → parse | Automática |
+| Cabeçalho | Necessário | Não necessário |
+| Indentação | N/A | Sim (WriteIndented) |
+| Padrão Web | ❌ | ✅ |
+
+### Vantagens do JSON
+
+1. **Serialização Automática**
+   - System.Text.Json cuida de tudo
+   - Sem parse manual
+   - Menos código, menos bugs
+
+2. **Formato Estruturado**
+   - JSON é padrão universal
+   - Fácil integração com APIs
+   - Suporte nativo em navegadores
+
+3. **Escape Automático**
+   - Não precisa tratar aspas, vírgulas manualmente
+   - Serializer cuida de caracteres especiais
+
+4. **Tipagem Forte**
+   - Deserialização direta para objetos
+   - IntelliSense e type-safety
+
+5. **Legibilidade Superior**
+   - Formatação indentada
+   - Estrutura clara
+   - Fácil edição manual
+
+### Limitações Conhecidas
+
+⚠️ **Implementação didática com limitações:**
+
+- Sem tratamento de concorrência
+- Performance em listas grandes (carrega/salva tudo)
+- Sem versionamento de esquema
+- Sem transações
+
+**Em produção:** Usar bibliotecas especializadas ou banco de dados.
+
+### Por que System.Text.Json?
+
+1. **Nativo do .NET** - Sem dependências externas
+2. **Performance** - Otimizado para .NET Core/.NET 5+
+3. **Segurança** - Mantido pela Microsoft
+4. **Simplicidade** - API direta e clara
+
+### Preparação para Próximas Fases
+
+A arquitetura está pronta para:
+- Fase 8: Repository com Banco de Dados
+- Fase 9: Repository com NoSQL
+
+**Facilidade:** Apenas trocar implementação, cliente não muda!
+
+### Checklist de Qualidade
+
+- [x] Contrato `IRepository<T, TId>` reutilizado
+- [x] Implementação `JsonBookRepository` completa
+- [x] System.Text.Json para serialização
+- [x] Formatação indentada (WriteIndented)
+- [x] CamelCase nas propriedades
+- [x] Escape automático de caracteres especiais
+- [x] 10 testes de integração
+- [x] Testes com arquivo temporário
+- [x] Casos especiais (aspas, símbolos)
+- [x] Persistência real demonstrada
+- [x] **Código organizado em pastas** (Domain, Repository, Services, Tests)
+- [x] .gitignore para arquivos JSON
+- [x] Documentação completa em `REPOSITORY-JSON.md`
 
