@@ -16,6 +16,8 @@
 - [Fase 5 - Repository InMemory](#fase-5---repository-inmemory)
 - [Fase 6 - Repository CSV](#fase-6---repository-csv)
 - [Fase 7 - Repository JSON](#fase-7---repository-json)
+- [Fase 8 - ISP (Interface Segregation Principle)](#fase-8---isp-interface-segregation-principle)
+- [Fase 9 - Dublês Avançados e Testes Assíncronos](#fase-9---dublês-avançados-e-testes-assíncronos)
 
 ---
 
@@ -814,4 +816,205 @@ A arquitetura está pronta para:
 - [x] **Código organizado em pastas** (Domain, Repository, Services, Tests)
 - [x] .gitignore para arquivos JSON
 - [x] Documentação completa em `REPOSITORY-JSON.md`
+
+---
+
+## Fase 8 - ISP (Interface Segregation Principle)
+
+### Objetivo
+Aplicar o **ISP (Interface Segregation Principle)** segregando a interface `IRepository<T, TId>` em interfaces menores e mais coesas, permitindo que clientes dependam apenas dos métodos que realmente precisam.
+
+**Ideia-chave:** Clientes não devem ser forçados a depender de interfaces que não usam.
+
+### Estrutura Organizada em Pastas
+
+```
+fase-08-isp/
+├── Domain/
+│   ├── Interfaces/          # Interfaces segregadas
+│   │   ├── IReadRepository.cs
+│   │   ├── IWriteRepository.cs
+│   │   └── IRepository.cs
+│   ├── Entities/
+│   │   └── Book.cs
+│   └── Repositories/
+│       └── InMemoryBookRepository.cs
+├── Services/
+│   ├── ReadOnlyBookService.cs
+│   └── BookService.cs
+├── Tests/
+│   └── TestesIsp.cs
+├── Program.cs
+└── ISP.md
+```
+
+**Organização:** Interfaces segregadas no Domain, Repositórios no Domain, Testes separados!
+
+### O Problema sem ISP
+
+Antes tínhamos uma única interface com 5 métodos:
+
+```csharp
+public interface IRepository<T, TId>
+{
+    T Add(T entity);              // Escrita
+    T? GetById(TId id);           // Leitura
+    IReadOnlyList<T> ListAll();   // Leitura
+    bool Update(T entity);        // Escrita
+    bool Remove(TId id);          // Escrita
+}
+```
+
+**Problema:** Um serviço que precisa apenas de leitura é forçado a receber interface com métodos de escrita.
+
+### A Solução com ISP
+
+**1. IReadRepository<T, TId>** - Apenas leitura
+```csharp
+public interface IReadRepository<T, TId>
+{
+    T? GetById(TId id);
+    IReadOnlyList<T> ListAll();
+}
+```
+
+**2. IWriteRepository<T, TId>** - Apenas escrita
+```csharp
+public interface IWriteRepository<T, TId>
+{
+    T Add(T entity);
+    bool Update(T entity);
+    bool Remove(TId id);
+}
+```
+
+**3. IRepository<T, TId>** - Interface completa
+```csharp
+public interface IRepository<T, TId> : IReadRepository<T, TId>, IWriteRepository<T, TId>
+{
+    // Herda de ambas
+}
+```
+
+### Como executar
+
+```bash
+cd src/fase-08-isp
+dotnet run
+```
+
+### Testes: 5/5 passaram ✅
+
+### Benefícios do ISP
+
+- Clientes dependem apenas do necessário
+- Segurança em compile-time
+- Interfaces menores e coesas
+- Facilita testes e mocks
+
+### Checklist de Qualidade
+
+- [x] Interfaces segregadas (IReadRepository, IWriteRepository)
+- [x] Interface completa herda de ambas
+- [x] ReadOnlyService usa apenas IReadRepository
+- [x] 5 testes demonstrando ISP
+- [x] **Código organizado em pastas**
+- [x] Documentação completa em `ISP.md`
+
+---
+
+## Fase 9 - Dublês Avançados e Testes Assíncronos
+
+### Objetivo
+Introduzir **5 tipos de dublês avançados** (Dummy, Stub, Spy, Mock, Fake) e implementar **testes assíncronos** usando `async/await`, demonstrando como testar código assíncrono.
+
+**Ideia-chave:** Diferentes tipos de dublês para diferentes propósitos, com operações assíncronas simulando I/O real.
+
+### Estrutura Organizada em Pastas
+
+```
+fase-09-dubles-avancados/
+├── Domain/
+│   ├── Entities/
+│   │   └── Book.cs
+│   ├── Interfaces/
+│   │   └── IAsyncRepository.cs
+│   └── Repositories/
+│       └── AsyncBookRepository.cs
+├── Services/
+│   └── AsyncBookService.cs
+├── Tests/
+│   ├── Dubles/
+│   │   ├── DummyRepository.cs
+│   │   ├── StubRepository.cs
+│   │   ├── SpyRepository.cs
+│   │   ├── MockRepository.cs
+│   │   └── FakeRepository.cs
+│   └── TestesAssincronos.cs
+├── Program.cs
+└── DUBLES-AVANCADOS.md
+```
+
+### Tipos de Dublês
+
+| Dublê | Quando Usar | Característica |
+|-------|-------------|----------------|
+| 🎭 Dummy | Não é chamado | Lança exceção |
+| 📋 Stub | Dados fixos | Respostas simples |
+| 🕵️ Spy | Verificar uso | Registra chamadas |
+| ✅ Mock | Expectativas | Verifica contratos |
+| 🔧 Fake | Funcionalidade | Implementação real |
+
+### Interface Assíncrona
+
+```csharp
+public interface IAsyncRepository<T, TId>
+{
+    Task<T> AddAsync(T entity);
+    Task<T?> GetByIdAsync(TId id);
+    Task<IReadOnlyList<T>> ListAllAsync();
+    Task<bool> UpdateAsync(T entity);
+    Task<bool> RemoveAsync(TId id);
+}
+```
+
+### Como executar
+
+```bash
+cd src/fase-09-dubles-avancados
+dotnet run
+```
+
+### Testes: 8/8 assíncronos passaram ✅
+
+### Operações Paralelas
+
+**Sequencial:** ~90ms (3 × 30ms)  
+**Paralelo:** ~30ms (Task.WhenAll)
+
+```csharp
+var task1 = service.FindByIdAsync(1);
+var task2 = service.FindByIdAsync(2);
+var task3 = service.FindByIdAsync(3);
+await Task.WhenAll(task1, task2, task3);
+```
+
+### Benefícios
+
+- Simula I/O real (BD, APIs, arquivos)
+- Testa código assíncrono (async/await)
+- Testes paralelos (mais rápidos)
+- 5 tipos de dublês especializados
+- Spy registra ordem e quantidade
+
+### Checklist de Qualidade
+
+- [x] Interface assíncrona (IAsyncRepository)
+- [x] 5 tipos de dublês implementados
+- [x] 8 testes assíncronos (todos passando)
+- [x] Task.WhenAll para paralelismo
+- [x] Fake com simulação de latência
+- [x] Spy registra chamadas e ordem
+- [x] **Código organizado em pastas**
+- [x] Documentação completa em `DUBLES-AVANCADOS.md`
 
