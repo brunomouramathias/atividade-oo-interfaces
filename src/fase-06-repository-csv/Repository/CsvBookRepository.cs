@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Fase06RepositoryCsv.Domain;
+using Fase06RepositoryCsv.Domain.Interfaces;
 
 namespace Fase06RepositoryCsv.Repository
 {
-    // Implementação CSV do Repository
+    /// <summary>
+    /// Implementação CSV do Repository. Persiste dados em arquivo .csv.
+    /// </summary>
     public sealed class CsvBookRepository : IRepository<Book, int>
     {
         private readonly string _path;

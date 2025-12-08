@@ -27,3 +27,4 @@ namespace Fase10CodeSmells.Domain.Repositories
     }
 }
 
+

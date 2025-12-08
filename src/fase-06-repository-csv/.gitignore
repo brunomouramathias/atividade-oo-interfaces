@@ -1,6 +1,0 @@
-# Arquivos CSV gerados em runtime
-*.csv
-
-# Arquivos temporários de teste
-*.tmp
-

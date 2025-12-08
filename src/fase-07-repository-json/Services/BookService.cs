@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Fase07RepositoryJson.Domain;
-using Fase07RepositoryJson.Repository;
+using Fase07RepositoryJson.Domain.Interfaces;
 
 namespace Fase07RepositoryJson.Services
 {
@@ -47,4 +47,5 @@ namespace Fase07RepositoryJson.Services
         }
     }
 }
+
 

@@ -1,19 +1,33 @@
-*.pdf
-*.txt
-*.pyc
-__pycache__/
-.vs/
-.vscode/
+# Arquivos de build
 bin/
 obj/
+
+# Visual Studio
+.vs/
 *.user
 *.suo
-.fases-futuras/
 
-# Arquivos de cache do NuGet e .NET
+# VS Code
+.vscode/
+
+# JetBrains Rider
+.idea/
+
+# Cache do NuGet
 *.nuget.cache
 *.nuget.dgspec.json
 *.nuget.g.props
 *.nuget.g.targets
 project.assets.json
 
+# Arquivos gerados
+*.csv
+*.json
+!appsettings.json
+
+# Python (se houver scripts)
+*.pyc
+__pycache__/
+
+# Pastas temporárias
+.fases-futuras/

@@ -1,4 +1,6 @@
 ﻿using System;
+using Fase03Interfaces.Domain.Algorithms;
+using Fase03Interfaces.Services;
 
 namespace Fase03Interfaces
 {
@@ -8,67 +10,65 @@ namespace Fase03Interfaces
         {
             Console.WriteLine("=== FASE 3 - INTERFACES ===\n");
 
-            // Catálogo de algoritmos
-            CatalogoAlgoritmos catalogo = new CatalogoAlgoritmos();
+            var catalogo = new CatalogoAlgoritmos();
 
-            // Cenário 1: Lista pequena (usa Bubble Sort automaticamente)
-            Console.WriteLine("--- Cenario 1: Lista Pequena ---");
+            // Demonstração 1: Seleção automática por tamanho
+            Console.WriteLine("--- Seleção Automática por Tamanho ---\n");
+
             int[] listaPequena = { 5, 2, 8, 1, 9 };
-            Console.WriteLine($"Original: [{string.Join(", ", listaPequena)}]");
-            
-            IAlgoritmoOrdenacao algoPequeno = catalogo.SelecionarPorTamanho(listaPequena.Length);
-            ServicoOrdenacao servicoPequeno = new ServicoOrdenacao(algoPequeno);
-            int[] resultadoPequeno = servicoPequeno.OrdenarLista(listaPequena);
-            Console.WriteLine($"Ordenada (auto): [{string.Join(", ", resultadoPequeno)}]\n");
+            DemonstrarOrdenacao("Lista pequena (5 elementos)", listaPequena, catalogo.SelecionarPorTamanho(5));
 
-            // Cenário 2: Lista média (usa Insertion Sort automaticamente)
-            Console.WriteLine("--- Cenario 2: Lista Media ---");
-            int[] listaMedia = { 15, 8, 23, 4, 16, 42, 12, 7, 31, 19, 
-                                 25, 3, 18, 11, 29, 6, 22, 14, 27, 9 };
-            Console.WriteLine($"Original: [{string.Join(", ", listaMedia)}] (tamanho: {listaMedia.Length})");
-            
-            IAlgoritmoOrdenacao algoMedio = catalogo.SelecionarPorTamanho(listaMedia.Length);
-            ServicoOrdenacao servicoMedio = new ServicoOrdenacao(algoMedio);
-            int[] resultadoMedio = servicoMedio.OrdenarLista(listaMedia);
-            Console.WriteLine($"Ordenada (auto): [{string.Join(", ", resultadoMedio)}]\n");
+            int[] listaMedia = { 42, 13, 7, 25, 18, 3, 55, 28, 11, 36, 22, 8, 45, 19, 33 };
+            DemonstrarOrdenacao("Lista média (15 elementos)", listaMedia, catalogo.SelecionarPorTamanho(15));
 
-            // Cenário 3: Lista grande (usa Quick Sort automaticamente)
-            Console.WriteLine("--- Cenario 3: Lista Grande ---");
-            Random random = new Random();
-            int[] listaGrande = new int[100];
-            for (int i = 0; i < 100; i++)
-                listaGrande[i] = random.Next(1, 500);
-            
-            Console.WriteLine($"Original: [{listaGrande[0]}, {listaGrande[1]}, {listaGrande[2]}, ... (100 elementos)]");
-            
-            IAlgoritmoOrdenacao algoGrande = catalogo.SelecionarPorTamanho(listaGrande.Length);
-            ServicoOrdenacao servicoGrande = new ServicoOrdenacao(algoGrande);
-            int[] resultadoGrande = servicoGrande.OrdenarLista(listaGrande);
-            Console.WriteLine($"Ordenada (auto): [{resultadoGrande[0]}, {resultadoGrande[1]}, {resultadoGrande[2]}, ... {resultadoGrande[97]}, {resultadoGrande[98]}, {resultadoGrande[99]}]\n");
+            int[] listaGrande = GerarListaAleatoria(60);
+            DemonstrarOrdenacao("Lista grande (60 elementos)", listaGrande, catalogo.SelecionarPorTamanho(60));
 
-            // Cenário 4: Seleção manual de algoritmo
-            Console.WriteLine("--- Cenario 4: Selecao Manual ---");
-            int[] listaManual = { 42, 13, 7, 25, 18 };
-            Console.WriteLine($"Original: [{string.Join(", ", listaManual)}]");
-            
-            IAlgoritmoOrdenacao algoManual = catalogo.ObterAlgoritmo("grande");
-            ServicoOrdenacao servicoManual = new ServicoOrdenacao(algoManual);
-            int[] resultadoManual = servicoManual.OrdenarLista(listaManual);
-            Console.WriteLine($"Ordenada (Quick Sort manual): [{string.Join(", ", resultadoManual)}]\n");
+            // Demonstração 2: Diferentes algoritmos na mesma lista
+            Console.WriteLine("\n--- Comparação de Algoritmos ---\n");
 
-            // Cenário 5: Comparação direta dos algoritmos
-            Console.WriteLine("--- Cenario 5: Comparacao dos Algoritmos ---");
-            int[] listaComparacao = { 12, 3, 9, 1, 15, 6 };
-            Console.WriteLine($"Original: [{string.Join(", ", listaComparacao)}]");
+            int[] listaTeste = { 64, 34, 25, 12, 22, 11, 90 };
+            Console.WriteLine($"Lista original: [{string.Join(", ", listaTeste)}]\n");
+
+            var servicoBubble = new ServicoOrdenacao(new BubbleSortAlgorithm());
+            var servicoQuick = new ServicoOrdenacao(new QuickSortAlgorithm());
+            var servicoInsertion = new ServicoOrdenacao(new InsertionSortAlgorithm());
+
+            Console.WriteLine($"Bubble Sort:    [{string.Join(", ", servicoBubble.OrdenarLista(listaTeste))}]");
+            Console.WriteLine($"Quick Sort:     [{string.Join(", ", servicoQuick.OrdenarLista(listaTeste))}]");
+            Console.WriteLine($"Insertion Sort: [{string.Join(", ", servicoInsertion.OrdenarLista(listaTeste))}]");
+
+            Console.WriteLine("\n=== DEMONSTRAÇÃO CONCLUÍDA ===");
+        }
+
+        static void DemonstrarOrdenacao(string descricao, int[] lista, Domain.Interfaces.IAlgoritmoOrdenacao algoritmo)
+        {
+            var servico = new ServicoOrdenacao(algoritmo);
+            var ordenada = servico.OrdenarLista(lista);
+
+            Console.WriteLine($"{descricao}");
+            Console.WriteLine($"  Algoritmo: {algoritmo.GetType().Name}");
             
-            ServicoOrdenacao servicoBubble = new ServicoOrdenacao(new BubbleSortAlgorithm());
-            Console.WriteLine($"Bubble Sort: [{string.Join(", ", servicoBubble.OrdenarLista(listaComparacao))}]");
-            
-            ServicoOrdenacao servicoInsertion = new ServicoOrdenacao(new InsertionSortAlgorithm());
-            Console.WriteLine($"Insertion Sort: [{string.Join(", ", servicoInsertion.OrdenarLista(listaComparacao))}]");
-            
-            ServicoOrdenacao servicoQuick = new ServicoOrdenacao(new QuickSortAlgorithm());
-            Console.WriteLine($"Quick Sort: [{string.Join(", ", servicoQuick.OrdenarLista(listaComparacao))}]");
+            if (lista.Length <= 10)
+            {
+                Console.WriteLine($"  Original:  [{string.Join(", ", lista)}]");
+                Console.WriteLine($"  Ordenada:  [{string.Join(", ", ordenada)}]");
+            }
+            else
+            {
+                Console.WriteLine($"  Primeiros 5: [{lista[0]}, {lista[1]}, {lista[2]}, {lista[3]}, {lista[4]}, ...]");
+                Console.WriteLine($"  Ordenada:    [{ordenada[0]}, {ordenada[1]}, {ordenada[2]}, ..., {ordenada[^2]}, {ordenada[^1]}]");
+            }
+            Console.WriteLine();
+        }
+
+        static int[] GerarListaAleatoria(int tamanho)
+        {
+            var random = new Random(42); // Seed fixa para reprodutibilidade
+            var lista = new int[tamanho];
+            for (int i = 0; i < tamanho; i++)
+                lista[i] = random.Next(1, 100);
+            return lista;
         }
     }
 }

@@ -1,0 +1,36 @@
+Fase 1 — Heurística antes do código (mapa mental)*
+(Exemplo preenchido usando o mesmo tema da Fase 0: **Pagamento)
+
+*Problema escolhido (1–2 linhas)*
+Queremos permitir que o cliente pague a compra escolhendo automaticamente o meio adequado (Pix ou Cartão) conforme regras simples de valor/risco.
+
+*Quadro 1 — Procedural (onde surgem if/switch)*
+
+* Fluxo: recebe valor → if (valor > 500) então “Cartão” senão “Pix” → processa → retorna sucesso/erro.
+* Decisões embutidas no fluxo (ramificações por valor e, eventualmente, disponibilidade do banco).
+* Sinais de dor: cada novo meio (Boleto, Crediário) adiciona novos if/switch, multiplicando casos e testes.
+
+*Quadro 2 — OO sem interface (quem encapsula o quê; o que ainda fica rígido)*
+
+* Encapsulamos lógica de cada meio em classes concretas: PixProcessor, CardProcessor.
+* Um “serviço” de pagamento orquestra o fluxo, mas *ainda conhece concretos* ou contém o if de escolha.
+* Melhoras: coesão por meio; menos duplicação.
+* Rigidêz remanescente: *cliente/orquestrador continua decidindo* “qual classe usar”; troca de meio altera o cliente.
+
+*Quadro 3 — Com interface (contrato que permite alternar + ponto de composição)*
+
+* *Contrato* (o que): “processar pagamento”.
+* *Implementações* (como): PixProcessor, CardProcessor (e futuras: BoletoProcessor, WalletProcessor).
+* *Ponto de composição*: escolha das peças fora do cliente (ex.: catálogo/política configurada: “> 500 → Cartão; senão → Pix”).
+* *Efeito: o **cliente não muda* quando alternamos implementações ou política; testes ficam mais simples (dublês).
+
+*3 sinais de alerta previstos*
+
+1. *Cliente muda ao trocar implementação* (cheiro de acoplamento ao “como”).
+2. *Ramificações espalhadas* (if/switch por tipo/valor em vários pontos).
+3. *Testes lentos e frágeis* (sem dublês, batendo em integrações reais; difícil simular falhas/controlar cenários).
+
+*Onde encontrar/testar (para README da equipe)*
+
+* Artefato do mapa (imagem ou .md) em src/fase-01-procedural/ ou docs/arquitetura/fase-01-mapa.*.
+* README (raiz) atualizado com: *composição da equipe (nomes e RAs)*, link para a Fase 1 e instruções de visualização do mapa.

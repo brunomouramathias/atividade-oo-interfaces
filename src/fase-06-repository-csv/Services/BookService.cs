@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Fase06RepositoryCsv.Domain;
-using Fase06RepositoryCsv.Repository;
+using Fase06RepositoryCsv.Domain.Interfaces;
 
 namespace Fase06RepositoryCsv.Services
 {

@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using Fase07RepositoryJson.Domain;
+using Fase07RepositoryJson.Domain.Interfaces;
 
 namespace Fase07RepositoryJson.Repository
 {
-    // Implementação JSON do Repository usando System.Text.Json
+    /// <summary>
+    /// Implementação JSON do Repository usando System.Text.Json.
+    /// </summary>
     public sealed class JsonBookRepository : IRepository<Book, int>
     {
         private readonly string _path;
@@ -103,4 +106,5 @@ namespace Fase07RepositoryJson.Repository
         }
     }
 }
+
 

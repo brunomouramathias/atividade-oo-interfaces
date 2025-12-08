@@ -11,3 +11,4 @@ namespace Fase10CodeSmells.Domain.Interfaces
     }
 }
 
+
