@@ -22,11 +22,13 @@ Implementamos dois algoritmos de ordenação (Bubble Sort e Quick Sort) e aplica
 
 ```
 src/
+├── fase-00-aquecimento/        # Conceitos e contratos
+├── fase-01-heuristica/         # Mapa mental
 ├── fase-02-procedural/         # Versão com switch
 ├── fase-03-interfaces/         # Primeira versão com interfaces
-│   ├── Domain/Interfaces/      # Contrato IAlgoritmoOrdenacao
-│   ├── Domain/Algorithms/      # BubbleSort, QuickSort, InsertionSort
-│   └── Services/               # ServicoOrdenacao, CatalogoAlgoritmos
+│   ├── Domain/Interfaces/
+│   ├── Domain/Algorithms/
+│   └── Services/
 ├── fase-04-plugavel-testavel/  # Testes com dublês
 ├── fase-05-repository-inmemory/  # Padrão Repository
 ├── fase-06-repository-csv/     # Persistência em CSV
